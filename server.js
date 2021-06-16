@@ -9,18 +9,15 @@ const axios = require("axios");
 
 // GET Route for 10 random pokemon
 pokeRoutes.route("/").get(async (req, res, next) => {
-  console.log("poke call");
-  console.log();
   try {
-    const p = await getPokes(10);
-    console.log(p);
-    res.json(p);
+    const pokes = await getPokesAsync(10);
+    res.json(pokes);
   } catch (e) {
     next(e);
   }
 });
 
-// Async function to get [amount] number of random pokemon
+// Function to get [amount] number of random pokemon
 const getPokes = async (amount) => {
   var pokeArray = [];
   for (let index = 0; index < amount; index++) {
@@ -30,6 +27,26 @@ const getPokes = async (amount) => {
     pokeArray.push(val.data);
   }
   return pokeArray;
+};
+
+// Async function to get [amount] pokemon at once using Promise.all
+const getPokesAsync = async (amount) => {
+  try {
+    const promises = [];
+    for (let index = 0; index < amount; index++) {
+      const currPromise = axios.get(
+        "https://pokeapi.co/api/v2/pokemon/" + Math.floor(Math.random() * 899)
+      );
+      promises.push(currPromise);
+    }
+    console.log(promises);
+
+    const res = await Promise.all(promises);
+    const data = res.map((res) => res.data);
+    return data;
+  } catch {
+    throw Error("Promise failed");
+  }
 };
 
 app.use(cors());
