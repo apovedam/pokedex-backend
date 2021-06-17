@@ -7,16 +7,6 @@ const pokeRoutes = express.Router();
 
 const axios = require("axios");
 
-// GET Route for 10 random pokemon
-pokeRoutes.route("/").get(async (req, res, next) => {
-  try {
-    const pokes = await getPokesAsync(10);
-    res.json(pokes);
-  } catch (e) {
-    next(e);
-  }
-});
-
 // Function to get [amount] number of random pokemon
 const getPokes = async (amount) => {
   var pokeArray = [];
@@ -39,7 +29,6 @@ const getPokesAsync = async (amount) => {
       );
       promises.push(currPromise);
     }
-    console.log(promises);
 
     const res = await Promise.all(promises);
     const data = res.map((res) => res.data);
@@ -51,6 +40,16 @@ const getPokesAsync = async (amount) => {
 
 app.use(cors());
 app.use(bodyParser.json());
+
+// GET Route for 10 random pokemon
+pokeRoutes.route("/").get(async (req, res, next) => {
+  try {
+    const pokes = await getPokesAsync(10);
+    res.json(pokes);
+  } catch (e) {
+    next(e);
+  }
+});
 
 app.use("/poke", pokeRoutes);
 
